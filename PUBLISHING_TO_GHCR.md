@@ -63,12 +63,11 @@ XPKG_REG_ORGS_NO_PROMOTE ?= ghcr.io/kyosenergy-engineering
 Build the provider package for your platform:
 
 ```bash
-# Build for the current platform (typically linux_amd64)
-make build
-
-# Or build for all supported platforms
+# Build for all supported platforms (recommended)
 make build.all
 ```
+
+**Note:** You must run `make build.all` (not just `make build`) to properly build the provider binaries, Docker images, and Crossplane packages.
 
 This will:
 1. Build the Go binaries
@@ -158,7 +157,7 @@ export XPKG_REG_ORGS="ghcr.io/kyosenergy-engineering"
 export XPKG_REG_ORGS_NO_PROMOTE="ghcr.io/kyosenergy-engineering"
 
 # 3. Build everything
-make build
+make build.all
 
 # 4. Get the version
 export VERSION=$(make version)

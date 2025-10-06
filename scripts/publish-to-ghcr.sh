@@ -85,7 +85,7 @@ export XPKG_REG_ORGS="${REGISTRY}"
 export XPKG_REG_ORGS_NO_PROMOTE="${REGISTRY}"
 
 # Build
-if make build; then
+if make build.all; then
     echo ""
     echo "  ✓ Build successful"
 else
