@@ -1,0 +1,16 @@
+---
+# Example: Installing provider-sql from GitHub Container Registry (GHCR)
+# 
+# This shows how to install the provider from a custom registry after
+# publishing it following the guide in PUBLISHING_TO_GHCR.md
+#
+# Usage:
+#   1. Update the package URL with your registry and version
+#   2. kubectl apply -f examples/provider-ghcr.yaml
+#   3. kubectl get providers
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-sql
+spec:
+  package: ghcr.io/kyosenergy-engineering/provider-sql:latest

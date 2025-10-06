@@ -36,6 +36,33 @@ Replace:
 - `YOUR_GITHUB_USERNAME` with your GitHub username
 - `$GITHUB_TOKEN` should contain your GitHub Personal Access Token
 
+### Setting up Image Pull Secrets (for private packages)
+
+If your GHCR package is private, you'll need to create an image pull secret in your Kubernetes cluster so Crossplane can pull the package:
+
+```bash
+# Create the secret in the crossplane-system namespace
+kubectl create secret docker-registry ghcr-credentials \
+  --namespace crossplane-system \
+  --docker-server=ghcr.io \
+  --docker-username=YOUR_GITHUB_USERNAME \
+  --docker-password=YOUR_GITHUB_TOKEN \
+  --docker-email=your-email@example.com
+```
+
+Then reference it in your Provider resource:
+
+```yaml
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: provider-sql
+spec:
+  package: ghcr.io/kyosenergy-engineering/provider-sql:latest
+  packagePullSecrets:
+    - name: ghcr-credentials
+```
+
 ## Step 3: Update the Registry Configuration
 
 You need to override the default registry settings to point to your GHCR. You can do this by setting environment variables:
