@@ -13,13 +13,11 @@ echo ""
 GITHUB_ORG="${GITHUB_ORG:-kyosenergy-engineering}"
 REGISTRY="${1:-ghcr.io/${GITHUB_ORG}}"
 PACKAGE_NAME="provider-sql"
-VERSION="${2:-$(make version 2>/dev/null || echo "v0.0.0-dev")}"
 PLATFORMS="${PLATFORMS:-linux_amd64}"
 
 echo "Configuration:"
 echo "  Registry: ${REGISTRY}"
 echo "  Package: ${PACKAGE_NAME}"
-echo "  Version: ${VERSION}"
 echo "  Platforms: ${PLATFORMS}"
 echo ""
 
@@ -97,22 +95,32 @@ fi
 echo ""
 echo "Looking for built packages..."
 
-# Find the package file(s)
+# Find the package file(s) that were actually built
 PACKAGE_FILES=()
+VERSION=""
 for platform in ${PLATFORMS}; do
-    pkg_file="_output/xpkg/${platform}/${PACKAGE_NAME}-${VERSION}.xpkg"
-    if [ -f "${pkg_file}" ]; then
+    # Find any .xpkg files in the platform directory
+    pkg_file=$(find "_output/xpkg/${platform}" -name "${PACKAGE_NAME}-*.xpkg" 2>/dev/null | head -1)
+    if [ -n "${pkg_file}" ] && [ -f "${pkg_file}" ]; then
         PACKAGE_FILES+=("--package ${pkg_file}")
         echo "  ✓ Found: ${pkg_file}"
+        
+        # Extract version from the first package file found
+        if [ -z "${VERSION}" ]; then
+            VERSION=$(basename "${pkg_file}" | sed "s/${PACKAGE_NAME}-\(.*\)\.xpkg/\1/")
+            echo "  ℹ Detected version: ${VERSION}"
+        fi
     else
-        echo "  ⚠ Not found: ${pkg_file}"
+        echo "  ⚠ No package found in _output/xpkg/${platform}/"
     fi
 done
 
 if [ ${#PACKAGE_FILES[@]} -eq 0 ]; then
     echo ""
     echo "Error: No package files found in _output/xpkg/"
-    echo "Expected location: _output/xpkg/<platform>/${PACKAGE_NAME}-${VERSION}.xpkg"
+    echo "Build may have failed or packages are in an unexpected location."
+    echo ""
+    echo "Searched for: _output/xpkg/<platform>/${PACKAGE_NAME}-*.xpkg"
     exit 1
 fi
 

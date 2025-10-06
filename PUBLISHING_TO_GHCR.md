@@ -105,11 +105,26 @@ The package will be created in `_output/xpkg/<platform>/provider-sql-<VERSION>.x
 
 ## Step 5: Push the Package to GHCR
 
-Now you can push the package to GHCR manually:
+### Using the automated script (recommended)
+
+The easiest way is to use the provided script, which automatically detects the version from the built packages:
 
 ```bash
-# Set the version you want to publish (or use the auto-generated one)
-export VERSION=$(make version)
+./scripts/publish-to-ghcr.sh
+```
+
+The script will:
+- Find the built packages in `_output/xpkg/`
+- Auto-detect the version from the package filename
+- Push to your configured registry
+
+### Manual push
+
+You can also push manually if you prefer:
+
+```bash
+# Find the version from the built package
+VERSION=$(ls _output/xpkg/linux_amd64/provider-sql-*.xpkg | sed 's/.*provider-sql-\(.*\)\.xpkg/\1/')
 
 # Push the package using the up CLI directly
 up xpkg push \
@@ -186,15 +201,19 @@ export XPKG_REG_ORGS_NO_PROMOTE="ghcr.io/kyosenergy-engineering"
 # 3. Build everything
 make build.all
 
-# 4. Get the version
-export VERSION=$(make version)
+# 4. Push using the automated script (detects version automatically)
+./scripts/publish-to-ghcr.sh
 
-# 5. Push to GHCR
+# OR manually:
+# 4a. Get the version from the built package
+export VERSION=$(ls _output/xpkg/linux_amd64/provider-sql-*.xpkg | sed 's/.*provider-sql-\(.*\)\.xpkg/\1/')
+
+# 4b. Push to GHCR
 up xpkg push \
   --package _output/xpkg/linux_amd64/provider-sql-${VERSION}.xpkg \
   ghcr.io/kyosenergy-engineering/provider-sql:${VERSION}
 
-# 6. (Optional) Tag as latest
+# 5. (Optional) Tag as latest
 up xpkg push \
   --package _output/xpkg/linux_amd64/provider-sql-${VERSION}.xpkg \
   ghcr.io/kyosenergy-engineering/provider-sql:latest
