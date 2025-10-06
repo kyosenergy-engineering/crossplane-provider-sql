@@ -67,6 +67,19 @@ Check the example:
 [cloudsqlinstance]: https://doc.crds.dev/github.com/crossplane/provider-gcp/database.gcp.crossplane.io/CloudSQLInstance/v1beta1@v0.18.0
 [created automatically]: https://crossplane.io/docs/v1.5/concepts/managed-resources.html#connection-details
 
+## Publishing to Container Registry
+
+If you've forked this repository and want to publish the provider to your own container registry (e.g., GitHub Container Registry), see the [GHCR Publishing Guide](PUBLISHING_TO_GHCR.md) for detailed instructions.
+
+Quick start:
+```bash
+# Authenticate with GHCR
+echo $GITHUB_TOKEN | docker login ghcr.io -u YOUR_USERNAME --password-stdin
+
+# Build and publish using the provided script
+./scripts/publish-to-ghcr.sh
+```
+
 ## Contributing
 
 1. Fork the project and clone locally.
